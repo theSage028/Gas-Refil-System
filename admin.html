@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Gas Refill Orders</title>
+  <script type="module" src="admin.js"></script>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <h1>Admin Panel - Orders</h1>
+
+  <h2>Pending Orders</h2>
+  <div class="table-container">
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Gas Type</th>
+          <th>Quantity (kg)</th>
+          <th>Delivery Address</th>
+          <th>Status</th>
+          <th>Order Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="pendingOrdersTable">
+        <tr>
+          <td class="order-id" data-id="1234567890">12...</td>
+          <td>Gas Type</td>
+          <td>10</td>
+          <td>123 Main St</td>
+          <td>Pending</td>
+          <td>2024-12-15</td>
+          <td><button>Process</button></td>
+        </tr>
+        <!-- More rows can be added dynamically -->
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Completed Orders</h2>
+  <div class="table-container">
+    <table border="1">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Gas Type</th>
+          <th>Quantity (kg)</th>
+          <th>Delivery Address</th>
+          <th>Status</th>
+          <th>Order Date</th>
+        </tr>
+      </thead>
+      <tbody id="completedOrdersTable">
+        <tr>
+          <td class="order-id" data-id="9876543210">98...</td>
+          <td>Gas Type</td>
+          <td>15</td>
+          <td>456 Oak Ave</td>
+          <td>Completed</td>
+          <td>2024-12-14</td>
+        </tr>
+        <!-- More rows can be added dynamically -->
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Generate Reports</h2>
+  <button id="generateReportButton">Download Report</button>
+
+  <button id="logoutButton">Logout</button>
+</body>
+</html>
