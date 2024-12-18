@@ -139,6 +139,20 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app); // Initialize auth
     const db = getFirestore(app);
+
+    // Logout button logic
+const logoutButton = document.getElementById('logoutButton');
+
+logoutButton.addEventListener('click', async () => {
+  try {
+    await auth.signOut(); // Firebase sign-out
+    alert("You have been logged out.");
+    window.location.href = "index.html"; // Redirect to the login page
+  } catch (error) {
+    console.error("Error during logout:", error);
+    alert("Failed to log out. Please try again.");
+  }
+});
   
     // ================= Profile Modal Logic =================
     let profileNameElement = document.getElementById('profileName'); // Display name element
@@ -350,6 +364,16 @@ function openOrderModal() {
   orderModal.style.display = 'block'; // Show the order modal
 }
 
+// Ensure the close button has the correct ID in the HTML
+closeOrderModalButton.addEventListener('click', () => {
+  try {
+    orderModal.style.display = 'none'; // Hide the order modal
+  } catch (error) {
+    console.error("Error closing order modal:", error);
+    alert("An error occurred while closing the order modal.");
+  }
+});
+
 // Function to update the price based on selected gas type and quantity
 function updatePrice() {
   const selectedGas = gasTypeSelect.options[gasTypeSelect.selectedIndex];
@@ -444,9 +468,6 @@ function updateRating(rating) {
   // Optionally, remove the line that updates the rating value
   // ratingValue.textContent = rating; // Remove this line
 }
-
-
-
   </script>
 </body>
 </html>

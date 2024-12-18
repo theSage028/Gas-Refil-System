@@ -1,62 +1,52 @@
-/* Importing Google Font Poppins */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
-
-/* General Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-}
-
-/* Body and background */
+/* General Styles */
 body {
-  background-color: #f7f7f7;
-  color: #333;
-  font-size: 16px;
-  padding: 20px;
-}
-
-/* Container */
-.container {
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 10px;
-  text-align: center;
-}
-
-/* Profile Header */
-#profileName {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-/* Buttons */
-button {
-  background-color: #ff8a00;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  font-size: 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin: 10px;
-  width: 100%;
-}
-
-button:hover {
-  background-color: #ff6f00;
-}
-
-button:active {
-  background-color: #ff4d00;
-}
-
-/* Modal Styles */
-.modal {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background-color: #f4f4f9;
+    color: #333;
+  }
+  
+  /* Container */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  /* Headings */
+  h1, h2 {
+    color: #4CAF50;
+    margin-bottom: 20px;
+  }
+  
+  /* Buttons */
+  button {
+    font-size: 16px;
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  
+  #logoutButton {
+    background-color: #ff4d4d;
+  }
+  
+  #logoutButton:hover {
+    background-color: #e60000;
+  }
+  
+  /* Modal Styles */
+  .modal {
     display: none;
     position: fixed;
     top: 0;
@@ -65,136 +55,130 @@ button:active {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    overflow: auto;
   }
   
   .modal-content {
     background-color: white;
+    margin: 10% auto;
     padding: 20px;
     border-radius: 10px;
-    max-width: 90%;
-    width: 450px;
-    text-align: center;
-    position: relative;
-    margin: auto;
+    max-width: 500px;
+    text-align: left;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
+  /* Close Button */
   .close-btn {
+    float: right;
     font-size: 24px;
-    color: #888;
+    font-weight: bold;
     cursor: pointer;
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    color: #333;
   }
   
   .close-btn:hover {
-    color: #ff8a00;
+    color: #ff4d4d;
   }
   
-
-/* Form Styling */
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-input, select {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
-
-input[type="number"] {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-label {
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 5px;
-  text-align: left;
-  width: 100%;
-}
-
-/* Price and Info Tag */
-#priceTag, #orderPrice {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-  margin: 10px 0;
-}
-
-/* Rating Section */
-#ratingSection {
-  margin-top: 20px;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.rating {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.star {
-  font-size: 30px;
-  color: #ffd700;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.star:hover {
-  transform: scale(1.2);
-}
-
-.star.selected {
-  color: #ff8a00;
-}
-
-/* Mobile Specific Styles */
-@media (max-width: 600px) {
-  #profileName {
-    font-size: 20px;
+  /* Form Styles */
+  form {
+    display: flex;
+    flex-direction: column;
   }
-
-  button {
-    font-size: 14px;
-    padding: 10px 20px;
+  
+  label {
+    margin-bottom: 5px;
+    font-weight: bold;
   }
-
-  .modal-content {
-    width: 90%;
-    padding: 15px;
-  }
-
+  
   input, select {
-    padding: 12px;
-    font-size: 16px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
   }
-
+  
+  input:focus, select:focus {
+    outline: none;
+    border-color: #4CAF50;
+  }
+  
+  /* Price Tag */
+  #priceTag {
+    font-size: 18px;
+    color: #4CAF50;
+    font-weight: bold;
+  }
+  
+  /* Table Styles */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  table th, table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  table th {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  /* Rating Section */
   #ratingSection {
-    padding: 15px;
+    margin-top: 30px;
   }
-}
-
-/* Icon Styling */
-.icon {
-  font-size: 20px;
-  margin-right: 10px;
-  color: #ff8a00;
-}
-
-.icon:hover {
-  color: #ff6f00;
-}
+  
+  .rating {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .star {
+    font-size: 24px;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.3s;
+  }
+  
+  .star:hover, .star.selected {
+    color: #FFD700;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .container {
+      padding: 15px;
+    }
+  
+    button {
+      font-size: 14px;
+      padding: 8px 15px;
+    }
+  
+    .modal-content {
+      width: 90%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    h1, h2 {
+      font-size: 20px;
+    }
+  
+    button {
+      font-size: 12px;
+      padding: 5px 10px;
+    }
+  
+    .modal-content {
+      padding: 15px;
+    }
+  }
+  

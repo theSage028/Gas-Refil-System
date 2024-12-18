@@ -1,143 +1,133 @@
-/* Global Reset */
+/* Global Styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
   
-  /* Body Styling */
   body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f7f7f7;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f4f9;
     color: #333;
-    padding: 10px;
-    overflow-x: hidden;
-    height: 100%;
+    padding: 20px;
   }
   
-  /* Header Styling */
-  h1 {
+  h1, h2 {
     text-align: center;
-    font-size: 1.4rem;
-    margin-bottom: 10px;
-    color: #2980b9;
-    font-weight: bold;
-  }
-  
-  h2 {
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-    color: #34495e;
-    font-weight: 500;
+    color: #4CAF50;
+    margin-bottom: 20px;
   }
   
   /* Table Container */
   .table-container {
+    margin: 20px auto;
     width: 100%;
+    max-width: 1000px;
     overflow-x: auto;
-    margin-bottom: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
   }
   
-  /* Table Styling */
   table {
     width: 100%;
     border-collapse: collapse;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  thead {
+    background-color: #4CAF50;
+    color: #fff;
   }
   
   th, td {
-    padding: 6px 10px;
     text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-    font-size: 0.85rem;
-    color: #333;
-    white-space: nowrap; /* Prevent text from wrapping */
-    overflow: hidden; /* Hide overflow text */
-    text-overflow: ellipsis; /* Add ellipsis */
+    padding: 12px;
+    border: 1px solid #ddd;
   }
   
-  /* Order ID Specific Styling */
-  td.order-id {
-    width: 80px; /* Adjust the width as needed */
-    max-width: 80px; /* Ensure it doesn't stretch */
-    text-align: center; /* Center the text */
-  }
-  
-  /* Truncate the Order ID to the first two characters */
-  td.order-id::after {
-    content: attr(data-id); /* Get the full Order ID */
-    display: inline-block;
-    width: 100%;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-  }
-  
-  th {
-    background-color: #2980b9;
-    color: #fff;
-    font-weight: bold;
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
   }
   
   tr:hover {
     background-color: #f1f1f1;
   }
   
-  /* Action Buttons */
+  th {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  td {
+    font-size: 14px;
+    color: #333;
+  }
+  
+  /* Buttons */
   button {
-    background-color: #2980b9;
-    color: white;
-    border: none;
     padding: 10px 15px;
-    font-size: 0.9rem;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    width: 100%;
-    margin-top: 15px;
   }
   
   button:hover {
-    background-color: #3498db;
-    transform: translateY(-2px);
+    background-color: #45a049;
   }
   
-  button:focus {
-    outline: none;
-  }
-  
-  /* Centering and Styling for Buttons */
+  /* Generate Reports & Logout Buttons */
   #generateReportButton, #logoutButton {
-    margin-top: 10px;
-    width: 100%;
-    max-width: 180px;
-    margin-left: auto;
-    margin-right: auto;
+    display: block;
+    width: 200px;
+    margin: 20px auto;
+    padding: 12px;
+    text-align: center;
   }
   
-  /* Responsive Design for 425x320 screen */
-  @media screen and (max-width: 425px) {
-    h1 {
-      font-size: 1.3rem;
+  #logoutButton {
+    background-color: #ff4d4d;
+  }
+  
+  #logoutButton:hover {
+    background-color: #e60000;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    body {
+      padding: 10px;
     }
   
-    h2 {
-      font-size: 1rem;
-    }
-  
-    table {
-      font-size: 0.8rem;
+    h1, h2 {
+      font-size: 20px;
     }
   
     th, td {
-      padding: 5px 8px;
+      font-size: 12px;
     }
   
     button {
-      font-size: 0.85rem;
-      padding: 8px 12px;
+      font-size: 12px;
+      padding: 8px 10px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 18px;
+    }
+  
+    th, td {
+      font-size: 10px;
+    }
+  
+    button {
+      font-size: 10px;
+      padding: 6px 8px;
     }
   }
   

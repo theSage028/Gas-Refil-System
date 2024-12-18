@@ -1,103 +1,111 @@
-/* Global Reset */
+/* Global Styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
   
-  /* Body Styling */
   body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f7f7f7;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f4f9;
     color: #333;
-    padding: 10px;
-    overflow-x: hidden;
-    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
   }
   
-  /* Container for Form */
+  /* Container */
   .container {
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
+    width: 90%;
+    max-width: 400px;
   }
   
   h1 {
-    font-size: 1.5rem;
-    color: #2980b9;
+    color: #4CAF50;
     margin-bottom: 20px;
-    font-weight: bold;
+    font-size: 24px;
   }
   
-  /* Input Fields Styling */
+  /* Form */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
   .input-group {
-    position: relative;
-    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
   }
   
   .input-group i {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #2980b9;
+    color: #4CAF50;
+    margin-right: 10px;
+    font-size: 16px;
   }
   
-  input {
-    width: 100%;
-    padding: 10px 10px 10px 30px; /* Adjust padding to make space for icons */
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-  }
-  
-  input:focus {
-    border-color: #2980b9;
+  .input-group input {
+    flex: 1;
+    border: none;
     outline: none;
+    font-size: 14px;
+    background-color: transparent;
   }
   
-  /* Button Styling */
   button {
-    background-color: #2980b9;
+    padding: 12px;
+    background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 10px 15px;
-    font-size: 1rem;
+    border-radius: 4px;
     cursor: pointer;
-    border-radius: 5px;
-    width: 100%;
-    margin-top: 10px;
+    font-size: 16px;
   }
   
   button:hover {
-    background-color: #3498db;
-    transform: translateY(-2px);
+    background-color: #45a049;
   }
   
-  button:focus {
-    outline: none;
-  }
-  
-  /* Link Styling */
+  /* Login Link */
   p {
-    margin-top: 10px;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #333;
   }
   
-  a {
-    color: #2980b9;
+  p a {
+    color: #4CAF50;
     text-decoration: none;
+    font-weight: bold;
   }
   
-  a:hover {
+  p a:hover {
     text-decoration: underline;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 20px;
+    }
+  
+    button {
+      font-size: 14px;
+      padding: 10px;
+    }
+  
+    .input-group input {
+      font-size: 12px;
+    }
   }
   
