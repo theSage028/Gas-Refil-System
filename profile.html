@@ -41,33 +41,44 @@
     <button id="placeOrderButton" onclick="openOrderModal()">Place an Order</button>
 
     <!-- Order Form Modal -->
-    <div id="orderModal" class="modal">
-      <div class="modal-content">
-        <span class="close-btn" id="closeOrderModalButton">&times;</span>
-        <h1>Place Your Order</h1>
-        <form id="orderForm">
-            <label for="gasType">Gas Type:</label>
-            <select id="gasType" required>
-              <option value="LPG" data-price="1500">LPG (₦1500/kg)</option>
-              <option value="CNG" data-price="250">CNG (₦250/kg)</option>
-            </select>
-            
-          <br>
-    
-          <label for="quantity">Quantity (kg):</label>
-          <input type="number" id="quantity" min="1" required>
-          <p id="priceTag">Total Price: ₦0</p>
-          <br>
-    
-          <label for="deliveryAddress">Delivery Address:</label>
-          <input type="text" id="deliveryAddress" required>
-          <br>
-    
-          <button type="submit">Place Order</button>
-        </form>
-      </div>
+<div id="orderModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeOrderModalButton">&times;</span>
+      <h1>Place Your Order</h1>
+      <form id="orderForm">
+        <label for="gasType">Gas Type:</label>
+        <select id="gasType" required>
+          <option value="LPG" data-price="1500">LPG (₦1500/kg)</option>
+          <option value="CNG" data-price="250">CNG (₦250/kg)</option>
+        </select>
+        <br>
+  
+        <label for="quantity">Quantity (kg):</label>
+        <input type="number" id="quantity" min="1" required>
+        <p id="priceTag">Total Price: ₦0</p>
+        <br>
+  
+        <label for="deliveryAddress">Delivery Address:</label>
+        <input type="text" id="deliveryAddress" required>
+        <br>
+  
+        <button type="button" id="showBankDetailsButton">Proceed to Payment</button> <!-- Change to button for showing bank details -->
+      </form>
     </div>
-    
+  </div>
+  
+  <!-- Bank Details Modal -->
+  <div id="bankModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeBankModalButton">&times;</span>
+      <h1>Bank Details</h1>
+      <p id="bankDetails"></p>
+      <p id="orderPrice"></p>
+      <button id="proceedPaymentButton">Proceed</button>
+      <button id="cancelPaymentButton">Cancel</button>
+    </div>
+  </div>
+
     <!-- Order History Button -->
     <button id="viewOrderHistoryButton">View Order History</button>
 
@@ -322,25 +333,25 @@ profileForm.addEventListener('submit', async (e) => {
   </script>
 
   <script>
+ // ================= Order Modal Logic =================
+const orderModal = document.getElementById('orderModal');
+const bankModal = document.getElementById('bankModal');
+const closeOrderModalButton = document.getElementById('closeOrderModalButton');
+const closeBankModalButton = document.getElementById('closeBankModalButton');
+const showBankDetailsButton = document.getElementById('showBankDetailsButton');
+const proceedPaymentButton = document.getElementById('proceedPaymentButton');
+const cancelPaymentButton = document.getElementById('cancelPaymentButton');
+const priceTag = document.getElementById('priceTag');
+const gasTypeSelect = document.getElementById('gasType');
+const quantityInput = document.getElementById('quantity');
 
-    // ================= Order Modal Logic =================
-    const orderModal = document.getElementById('orderModal');
-    const closeOrderModalButton = document.getElementById('closeOrderModalButton');
+// Function to open the order modal
+function openOrderModal() {
+  orderModal.style.display = 'block'; // Show the order modal
+}
 
-    function openOrderModal() {
-      orderModal.style.display = 'block';
-    }
-    closeOrderModalButton.addEventListener('click', () => orderModal.style.display = 'none');
-    window.addEventListener('click', (event) => {
-      if (event.target === orderModal) orderModal.style.display = 'none';
-    });
-
-    // ================= Price Calculation =================
-    const gasTypeSelect = document.getElementById('gasType');
-    const quantityInput = document.getElementById('quantity');
-    const priceTag = document.getElementById('priceTag');
-
-    function updatePrice() {
+// Function to update the price based on selected gas type and quantity
+function updatePrice() {
   const selectedGas = gasTypeSelect.options[gasTypeSelect.selectedIndex];
   const pricePerKg = parseFloat(selectedGas.getAttribute('data-price')) || 0;
   const quantity = parseFloat(quantityInput.value) || 0;
@@ -348,9 +359,65 @@ profileForm.addEventListener('submit', async (e) => {
   priceTag.textContent = `Total Price: ₦${totalPrice}`;
 }
 
+// Update price when gas type or quantity changes
+gasTypeSelect.addEventListener('change', updatePrice);
+quantityInput.addEventListener('input', updatePrice);
 
-    gasTypeSelect.addEventListener('change', updatePrice);
-    quantityInput.addEventListener('input', updatePrice);
+
+// Function to generate random account number
+function generateAccountNumber() {
+  const accountNumber = '0' + Math.floor(Math.random() * 1000000000).toString().padStart(10, '0');
+  return accountNumber;
+}
+
+// List of Nigerian bank names
+const banks = [
+  "Access Bank", "First Bank", "Guaranty Trust Bank", "Zenith Bank", 
+  "United Bank for Africa", "Stanbic IBTC", "Ecobank", "Fidelity Bank", 
+  "Union Bank", "Wema Bank"
+];
+
+// Function to show bank details and total price
+showBankDetailsButton.addEventListener('click', () => {
+  const selectedGas = gasTypeSelect.options[gasTypeSelect.selectedIndex];
+  const pricePerKg = parseFloat(selectedGas.getAttribute('data-price')) || 0;
+  const quantity = parseFloat(quantityInput.value) || 0;
+  const totalPrice = (pricePerKg * quantity).toFixed(2);
+  alert("Make sure you make payment berore you click on Proceed");
+
+  // Select a random bank
+  const randomBank = banks[Math.floor(Math.random() * banks.length)];
+  const accountNumber = generateAccountNumber();
+
+  // Display bank details and price in the bank modal
+  document.getElementById('bankDetails').textContent = `Bank: ${randomBank}\nAccount Number: ${accountNumber}`;
+  document.getElementById('orderPrice').textContent = `Total Price: ₦${totalPrice}`;
+
+  // Show the bank details modal
+  bankModal.style.display = 'block';
+  orderModal.style.display = 'none'; // Hide the order modal
+});
+
+// Function to proceed with the payment
+proceedPaymentButton.addEventListener('click', () => {
+  alert("Your order has been placed. Thank you for your payment!");
+  // Here, you would normally process the payment and store the order in the database
+  bankModal.style.display = 'none'; // Hide the bank modal
+  orderModal.style.display = 'none'; // Optionally, hide the order modal
+  // Reset form or perform any other necessary actions
+});
+
+// Function to cancel the payment process
+cancelPaymentButton.addEventListener('click', () => {
+  bankModal.style.display = 'none'; // Hide the bank modal
+  orderModal.style.display = 'block'; // Show the order modal again
+});
+
+// Close modals when clicking outside
+window.addEventListener('click', (event) => {
+  if (event.target === orderModal) orderModal.style.display = 'none';
+  if (event.target === bankModal) bankModal.style.display = 'none';
+});
 
     // Rating functionality
 const stars = document.querySelectorAll('.star');
