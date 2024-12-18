@@ -225,29 +225,3 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// Rating functionality
-const stars = document.querySelectorAll('.star');
-const ratingValue = document.getElementById('ratingValue');
-
-stars.forEach(star => {
-  star.addEventListener('click', () => {
-    const rating = star.getAttribute('data-value');
-    updateRating(rating);
-  });
-});
-
-function updateRating(rating) {
-  // Reset all stars
-  stars.forEach(star => {
-    star.classList.remove('selected');
-  });
-
-  // Select the appropriate number of stars
-  for (let i = 0; i < rating; i++) {
-    stars[i].classList.add('selected');
-  }
-
-  // Display the rating value
-  ratingValue.textContent = rating;
-}
-

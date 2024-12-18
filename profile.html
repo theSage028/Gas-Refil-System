@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile</title>
-  <script type="module" src="app.js" defer></script>
+  <!-- <script type="module" src="app.js" defer></script> -->
   <link rel="stylesheet" href="profile.css">
 </head>
 <body>
@@ -46,16 +46,17 @@
         <span class="close-btn" id="closeOrderModalButton">&times;</span>
         <h1>Place Your Order</h1>
         <form id="orderForm">
-          <label for="gasType">Gas Type:</label>
-          <select id="gasType" required>
-            <option value="LPG" data-price="10">LPG ($10/kg)</option>
-            <option value="CNG" data-price="8">CNG ($8/kg)</option>
-          </select>
+            <label for="gasType">Gas Type:</label>
+            <select id="gasType" required>
+              <option value="LPG" data-price="1500">LPG (₦1500/kg)</option>
+              <option value="CNG" data-price="250">CNG (₦250/kg)</option>
+            </select>
+            
           <br>
     
           <label for="quantity">Quantity (kg):</label>
           <input type="number" id="quantity" min="1" required>
-          <p id="priceTag">Total Price: $0</p>
+          <p id="priceTag">Total Price: ₦0</p>
           <br>
     
           <label for="deliveryAddress">Delivery Address:</label>
@@ -76,18 +77,18 @@
         <span class="close-btn" id="closeOrderHistoryModalButton">&times;</span>
         <h2>Order History</h2>
         <table id="orderHistoryTable">
-          <thead>
-            <tr>
-              <th>Gas Type</th>
-              <th>Date</th>
-              <th>Quantity (kg)</th>
-              <th>Delivery Address</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Orders will be dynamically added here -->
-          </tbody>
-        </table>
+            <thead>
+              <tr>
+                <th>Gas Type</th>
+                <th>Order Date</th>
+                <th>Quantity</th>
+                <th>Delivery Address</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Order rows will be dynamically inserted here -->
+            </tbody>
+          </table>          
       </div>
     </div>  
 
@@ -105,62 +106,146 @@
     </section>
   </div>
 
+  
   <script type="module">
     // Import Firebase services
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getAuth, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-
-// Your Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCX0vxlyd0hXXDur4v3SpAnNuRwrm4Fyyc",
-  authDomain: "gas-refill-app.firebaseapp.com",
-  projectId: "gas-refill-app",
-  storageBucket: "gas-refill-app.firebasestorage.app",
-  messagingSenderId: "369760533545",
-  appId: "1:369760533545:web:5bc99b940b30154fe3b038",
-  measurementId: "G-8GV51M539Z"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// ================= Profile Modal Logic =================
-let profileNameElement = document.getElementById('profileName'); // Display name element
-
-// Function to load the user's display name from Firebase
-const loadUserProfile = async () => {
-  const user = auth.currentUser;
-
-  if (user) {
-    try {
-      // Fetch the user's document from Firestore
-      const userRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userRef);
-
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        const displayName = userData.displayName || user.displayName || "Profile"; // Fallback to "Profile" if no displayName exists
-        profileNameElement.textContent = displayName; // Display the name in the profile section
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+  
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX0vxlyd0hXXDur4v3SpAnNuRwrm4Fyyc",
+      authDomain: "gas-refill-app.firebaseapp.com",
+      projectId: "gas-refill-app",
+      storageBucket: "gas-refill-app.firebasestorage.app",
+      messagingSenderId: "369760533545",
+      appId: "1:369760533545:web:5bc99b940b30154fe3b038",
+      measurementId: "G-8GV51M539Z"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app); // Initialize auth
+    const db = getFirestore(app);
+  
+    // ================= Profile Modal Logic =================
+    let profileNameElement = document.getElementById('profileName'); // Display name element
+  
+    // Function to load the user's display name from Firebase
+    const loadUserProfile = async () => {
+      const user = auth.currentUser;
+  
+      if (user) {
+        try {
+          const userRef = doc(db, 'users', user.uid);
+          const userDoc = await getDoc(userRef);
+  
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const displayName = userData.displayName || user.displayName || "Profile";
+            profileNameElement.textContent = displayName;
+          } else {
+            profileNameElement.textContent = "Profile";
+          }
+        } catch (error) {
+          console.error("Error loading user profile:", error);
+          profileNameElement.textContent = "Profile";
+        }
       } else {
-        // If the user document does not exist, fallback to "Profile"
         profileNameElement.textContent = "Profile";
       }
-    } catch (error) {
-      console.error("Error loading user profile:", error);
-      profileNameElement.textContent = "Profile"; // Fallback to "Profile" if there is an error
-    }
-  } else {
-    profileNameElement.textContent = "Profile"; // Fallback to "Profile" if no user is logged in
-  }
-};
+    };
+  
+    // Listen for authentication state changes
+    onAuthStateChanged(auth, (user) => {
+      console.log("Auth state changed:", user);
+      if (user) {
+        loadUserProfile();
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+  
+    // ================= Order History Logic =================
+    const viewOrderHistoryButton = document.getElementById('viewOrderHistoryButton');
+    const orderHistoryModal = document.getElementById('orderHistoryModal');
+    const closeOrderHistoryModalButton = document.getElementById('closeOrderHistoryModalButton');
+  
+    // Function to fetch order history from Firebase
+    async function fetchOrderHistory(userId) {
+  const orderHistoryTableBody = document.querySelector("#orderHistoryTable tbody");
+  
+  // Clear previous data before adding new ones
+  orderHistoryTableBody.innerHTML = "";
 
-// Listen for authentication state changes
-onAuthStateChanged(auth, (user) => {
-  loadUserProfile(); // Load the user's profile when the page loads or the auth state changes
+  const q = query(collection(db, "orders"), where("userId", "==", userId));
+  try {
+    console.log("Fetching order history...");
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      const row = document.createElement("tr");
+      row.innerHTML = `<td colspan="4">No orders found.</td>`;
+      orderHistoryTableBody.appendChild(row);
+    } else {
+      querySnapshot.forEach((doc) => {
+        const order = doc.data();
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${order.gasType}</td>
+          <td>${new Date(order.orderDate).toLocaleString()}</td>
+          <td>${order.quantity}</td>
+          <td>${order.deliveryAddress}</td>
+        `;
+        orderHistoryTableBody.appendChild(row);
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching order history:", error);
+    alert("Failed to load order history. Please try again later.");
+  }
+}
+
+// Event listener to open order history modal and fetch orders
+viewOrderHistoryButton.addEventListener('click', () => {
+  try {
+    const user = auth.currentUser;
+
+    if (user) {
+      console.log("User is logged in:", user.uid);
+      fetchOrderHistory(user.uid); // Use the logged-in user's ID
+      orderHistoryModal.style.display = 'block';
+    } else {
+      alert("You need to be logged in to view your order history.");
+    }
+  } catch (error) {
+    console.error("Error opening order history modal:", error);
+    alert("An error occurred while trying to open the order history. Please try again.");
+  }
 });
+
+// Ensure the modal closes properly
+closeOrderHistoryModalButton.addEventListener('click', () => {
+  try {
+    orderHistoryModal.style.display = 'none';
+  } catch (error) {
+    console.error("Error closing order history modal:", error);
+    alert("An error occurred while closing the modal.");
+  }
+});
+
+// Close modal if clicked outside
+window.addEventListener('click', (event) => {
+  try {
+    if (event.target === orderHistoryModal) orderHistoryModal.style.display = 'none';
+  } catch (error) {
+    console.error("Error detecting outside click:", error);
+    alert("An error occurred while detecting the outside click.");
+  }
+});
+
 
 // ================= Profile Modal Logic =================
 const editProfileButton = document.getElementById('editProfileButton');
@@ -256,62 +341,44 @@ profileForm.addEventListener('submit', async (e) => {
     const priceTag = document.getElementById('priceTag');
 
     function updatePrice() {
-      const selectedGas = gasTypeSelect.options[gasTypeSelect.selectedIndex];
-      const pricePerKg = parseFloat(selectedGas.getAttribute('data-price')) || 0;
-      const quantity = parseFloat(quantityInput.value) || 0;
-      const totalPrice = (pricePerKg * quantity).toFixed(2);
-      priceTag.textContent = `Total Price: $${totalPrice}`;
-    }
+  const selectedGas = gasTypeSelect.options[gasTypeSelect.selectedIndex];
+  const pricePerKg = parseFloat(selectedGas.getAttribute('data-price')) || 0;
+  const quantity = parseFloat(quantityInput.value) || 0;
+  const totalPrice = (pricePerKg * quantity).toFixed(2);
+  priceTag.textContent = `Total Price: ₦${totalPrice}`;
+}
+
 
     gasTypeSelect.addEventListener('change', updatePrice);
     quantityInput.addEventListener('input', updatePrice);
 
-    // ================= Order History Logic =================
-    const viewOrderHistoryButton = document.getElementById('viewOrderHistoryButton');
-    const orderHistoryModal = document.getElementById('orderHistoryModal');
-    const closeOrderHistoryModalButton = document.getElementById('closeOrderHistoryModalButton');
+    // Rating functionality
+const stars = document.querySelectorAll('.star');
+const ratingValue = document.getElementById('ratingValue');
 
-    // Function to fetch order history from Firebase
-    async function fetchOrderHistory(userId) {
-      const orderHistoryTableBody = document.querySelector("#orderHistoryTable tbody");
-      orderHistoryTableBody.innerHTML = ""; // Clear previous data
+stars.forEach(star => {
+  star.addEventListener('click', () => {
+    const rating = star.getAttribute('data-value');
+    updateRating(rating);
+  });
+});
 
-      // Assuming you're using Firebase Firestore
-      const q = query(collection(db, "orders"), where("userId", "==", userId));
-      try {
-        const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          const order = doc.data();
-          const row = document.createElement("tr");
+function updateRating(rating) {
+  // Reset all stars
+  stars.forEach(star => {
+    star.classList.remove('selected');
+  });
 
-          row.innerHTML = `
-            <td>${order.gasType}</td>
-            <td>${new Date(order.orderDate).toLocaleString()}</td>
-            <td>${order.quantity}</td>
-            <td>${order.deliveryAddress}</td>
-          `;
-          orderHistoryTableBody.appendChild(row);
-        });
-      } catch (error) {
-        console.error("Error fetching order history:", error);
-        alert("Failed to load order history.");
-      }
-    }
+  // Select the appropriate number of stars
+  for (let i = 0; i < rating; i++) {
+    stars[i].classList.add('selected');
+  }
 
-    // Event listener to open order history modal and fetch orders
-    viewOrderHistoryButton.addEventListener('click', () => {
-      const userId = "user123"; // Replace with actual user ID
-      fetchOrderHistory(userId);
-      orderHistoryModal.style.display = 'block';
-    });
+  // Optionally, remove the line that updates the rating value
+  // ratingValue.textContent = rating; // Remove this line
+}
 
-    // Close modal logic
-    closeOrderHistoryModalButton.addEventListener('click', () => {
-      orderHistoryModal.style.display = 'none';
-    });
-    window.addEventListener('click', (event) => {
-      if (event.target === orderHistoryModal) orderHistoryModal.style.display = 'none';
-    });
+
 
   </script>
 </body>
