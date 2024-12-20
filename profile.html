@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile</title>
-  <!-- <script type="module" src="app.js" defer></script> -->
+  <script type="module" src="excess.js" defer></script>
   <link rel="stylesheet" href="profile.css">
 </head>
 <body>
@@ -32,7 +32,7 @@
           <label for="confirmPassword">Confirm New Password</label>
           <input type="password" id="confirmPassword" placeholder="Confirm new password" />
           
-          <button type="submit">Save Changes</button>
+          <button type="submit" id="update-profile-btn">Save Changes</button>
         </form>
       </div>
     </div>
@@ -122,8 +122,10 @@
     // Import Firebase services
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
     import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-  
+    import { getFirestore, getDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+    import { updateProfile, updatePassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+    import { updateDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+
     // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyCX0vxlyd0hXXDur4v3SpAnNuRwrm4Fyyc",
@@ -343,6 +345,7 @@ profileForm.addEventListener('submit', async (e) => {
     alert(`Failed to update profile. Error: ${error.message || error}`);
   }
 });
+
 
   </script>
 
