@@ -3,6 +3,7 @@ import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getAuth, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { addDoc, collection } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -94,3 +95,55 @@ onAuthStateChanged(auth, (user) => {
     console.log('No user is signed in');
   }
 });
+
+
+// Get references to modals
+const bankModal = document.getElementById('bankModal');
+const orderModal = document.getElementById('orderModal');
+
+// Function to place the order
+async function placeOrder() {
+    const orderForm = document.getElementById('orderForm');
+    const gasType = document.getElementById("gasType").value;
+    const quantity = document.getElementById("quantity").value;
+    const deliveryAddress = document.getElementById("deliveryAddress").value;
+  
+    const user = auth.currentUser;
+  
+    if (user) {
+      try {
+        // Add order to Firestore
+        await addDoc(collection(db, "orders"), {
+          userId: user.uid,
+          gasType,
+          quantity: parseInt(quantity),
+          deliveryAddress,
+          orderDate: new Date().toISOString(),
+          status: "Pending",
+        });
+        alert("Your order has been placed. Thank you for your payment!");
+        orderForm.reset(); // Reset the form
+  
+        // Fetch and display the order history
+        fetchOrderHistory(user.uid); // Refresh order history
+  
+        // Close modals after order placement
+        bankModal.style.display = 'none';
+        orderModal.style.display = 'none';
+      } catch (error) {
+        console.error("Error placing order:", error.message);
+        alert("Failed to place order. Please try again.");
+      }
+    } else {
+      alert("You must be logged in to place an order.");
+    }
+  }
+  
+
+// Add event listener to proceed payment button
+const proceedPaymentButton = document.getElementById('proceedPaymentButton');
+if (proceedPaymentButton) {
+  proceedPaymentButton.addEventListener('click', () => {
+    placeOrder(); // Call the function to place the order
+  });
+}
