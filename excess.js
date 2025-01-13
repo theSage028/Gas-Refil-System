@@ -1,9 +1,9 @@
 import { updateDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { updatePassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getAuth, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-import { addDoc, collection } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { addDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -101,44 +101,93 @@ onAuthStateChanged(auth, (user) => {
 const bankModal = document.getElementById('bankModal');
 const orderModal = document.getElementById('orderModal');
 
+// Function to fetch order history from Firebase
+async function fetchOrderHistory(userId) {
+  const orderHistoryTableBody = document.querySelector("#orderHistoryTable tbody");
+
+  // Clear previous data before adding new ones
+  orderHistoryTableBody.innerHTML = "";
+
+  const q = query(collection(db, "orders"), where("userId", "==", userId));
+  try {
+    console.log("Fetching order history...");
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      const row = document.createElement("tr");
+      row.innerHTML = `<td colspan="4">No orders found.</td>`;
+      orderHistoryTableBody.appendChild(row);
+    } else {
+      querySnapshot.forEach((doc) => {
+        const order = doc.data();
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${order.gasType}</td>
+          <td>${new Date(order.orderDate).toLocaleString()}</td>
+          <td>${order.quantity}</td>
+          <td>${order.deliveryAddress}</td>
+        `;
+        orderHistoryTableBody.appendChild(row);
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching order history:", error);
+    alert("Failed to load order history. Please try again later.");
+  }
+}
+
 // Function to place the order
 async function placeOrder() {
-    const orderForm = document.getElementById('orderForm');
-    const gasType = document.getElementById("gasType").value;
-    const quantity = document.getElementById("quantity").value;
-    const deliveryAddress = document.getElementById("deliveryAddress").value;
-  
-    const user = auth.currentUser;
-  
-    if (user) {
-      try {
-        // Add order to Firestore
-        await addDoc(collection(db, "orders"), {
-          userId: user.uid,
-          gasType,
-          quantity: parseInt(quantity),
-          deliveryAddress,
-          orderDate: new Date().toISOString(),
-          status: "Pending",
-        });
-        alert("Your order has been placed. Thank you for your payment!");
-        orderForm.reset(); // Reset the form
-  
-        // Fetch and display the order history
-        fetchOrderHistory(user.uid); // Refresh order history
-  
-        // Close modals after order placement
-        bankModal.style.display = 'none';
-        orderModal.style.display = 'none';
-      } catch (error) {
-        console.error("Error placing order:", error.message);
-        alert("Failed to place order. Please try again.");
-      }
-    } else {
-      alert("You must be logged in to place an order.");
+  const orderForm = document.getElementById('orderForm');
+  const gasType = document.getElementById("gasType").value;
+  const quantity = document.getElementById("quantity").value;
+  const deliveryAddress = document.getElementById("deliveryAddress").value;
+
+  const user = auth.currentUser;
+
+  if (user) {
+    try {
+      // Create the order object
+      const order = {
+        userId: user.uid,
+        gasType,
+        quantity: parseInt(quantity),
+        deliveryAddress,
+        orderDate: new Date().toISOString(),
+        status: "Pending",
+      };
+
+      // Add order to Firestore
+      const orderRef = await addDoc(collection(db, "orders"), order);
+      alert("Your order has been placed. Thank you for your payment!");
+
+      // Redirect to receipt.html with order details in URL parameters
+      const queryParams = new URLSearchParams({
+        orderId: orderRef.id,
+        gasType: order.gasType,
+        quantity: order.quantity,
+        deliveryAddress: order.deliveryAddress,
+        orderDate: order.orderDate,
+        totalPrice: (order.quantity * 1500).toFixed(2), // Example pricing logic
+      }).toString();
+
+      window.location.href = `receipt.html?${queryParams}`;
+
+      // Reset the form
+      orderForm.reset();
+
+      // Close modals after order placement
+      bankModal.style.display = 'none';
+      orderModal.style.display = 'none';
+    } catch (error) {
+      console.error("Error placing order:", error.message);
+      alert("Failed to place order. Please try again.");
     }
+  } else {
+    alert("You must be logged in to place an order.");
   }
-  
+}
 
 // Add event listener to proceed payment button
 const proceedPaymentButton = document.getElementById('proceedPaymentButton');
