@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Receipt</title>
+  <link rel="stylesheet" href="receipt.css">
+</head>
+<body>
+  <div class="receipt-container">
+    <h1>Payment Receipt</h1>
+    <p id="receiptDate"></p>
+    <table>
+      <tr>
+        <th>Gas Type</th>
+        <td id="receiptGasType">N/A</td>
+      </tr>
+      <tr>
+        <th>Quantity (kg)</th>
+        <td id="receiptQuantity">N/A</td>
+      </tr>
+      <tr>
+        <th>Total Price</th>
+        <td id="receiptTotalPrice">₦0</td>
+      </tr>
+      <tr>
+        <th>Delivery Address</th>
+        <td id="receiptAddress">N/A</td>
+      </tr>
+    </table>
+    <div class="buttons">
+      <button onclick="printReceipt()">Print Receipt</button>
+      <button onclick="downloadReceipt()">Download as PDF</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script>
+    // Parse URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const gasType = params.get('gasType') || 'N/A';
+    const quantity = params.get('quantity') || 'N/A';
+    const totalPrice = params.get('totalPrice') || '0';
+    const deliveryAddress = params.get('deliveryAddress') || 'N/A';
+
+    // Populate receipt fields
+    document.getElementById('receiptDate').textContent = `Date: ${new Date().toLocaleString()}`;
+    document.getElementById('receiptGasType').textContent = gasType;
+    document.getElementById('receiptQuantity').textContent = quantity;
+    document.getElementById('receiptTotalPrice').textContent = `₦${totalPrice}`;
+    document.getElementById('receiptAddress').textContent = deliveryAddress;
+
+    // Print receipt
+    function printReceipt() {
+      window.print();
+    }
+
+    // Download receipt as PDF
+    async function downloadReceipt() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+
+      pdf.setFontSize(16);
+      pdf.text('Payment Receipt', 20, 20);
+      pdf.setFontSize(12);
+      pdf.text(`Date: ${new Date().toLocaleString()}`, 20, 30);
+      pdf.text(`Gas Type: ${gasType}`, 20, 40);
+      pdf.text(`Quantity: ${quantity} kg`, 20, 50);
+      pdf.text(`Total Price: ₦${totalPrice}`, 20, 60);
+      pdf.text(`Delivery Address: ${deliveryAddress}`, 20, 70);
+
+      pdf.save('receipt.pdf');
+    }
+  </script>
+</body>
+</html>
