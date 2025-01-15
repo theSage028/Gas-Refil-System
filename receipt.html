@@ -37,6 +37,12 @@
         const totalPrice = params.get('totalPrice') || '0';
         const deliveryAddress = params.get('deliveryAddress') || 'N/A';
 
+        // Debugging - check if parameters are correctly retrieved
+        console.log("Gas Type: ", gasType);
+        console.log("Quantity: ", quantity);
+        console.log("Total Price: ", totalPrice);
+        console.log("Delivery Address: ", deliveryAddress);
+
         // Populate receipt fields
         document.getElementById('receiptDate').textContent = `Date: ${new Date().toLocaleString()}`;
         document.getElementById('receiptGasType').textContent = gasType;
@@ -46,11 +52,14 @@
 
         // Send email after the receipt is loaded
         onAuthStateChanged(auth, async (user) => {
-            let userEmail = 'ezekielmatthew28@gmail.com'; // Default email if no user is logged in
+            let userEmail = 'derickkingdomanimation@gmail.com'; // Default email if no user is logged in
 
             if (user) {
                 userEmail = user.email; // Use logged-in user's email
             }
+
+            // Debugging - check which email is being used
+            console.log("Email to send receipt to: ", userEmail);
 
             try {
                 // Send the email via EmailJS
