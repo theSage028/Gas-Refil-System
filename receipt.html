@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Receipt</title>
     <link rel="stylesheet" href="receipt.css">
-    <!-- Firebase JS SDK v9+ (modular) -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
@@ -27,28 +26,32 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Initialize EmailJS (replace with your actual User ID from EmailJS dashboard)
-        emailjs.init("Wln1Nu2TKjqVMGCsA"); // Using your public key here
+        // Initialize EmailJS
+        emailjs.init("Wln1Nu2TKjqVMGCsA"); // Replace with your actual public key
 
-        // Parse URL parameters
-        const params = new URLSearchParams(window.location.search);
-        const gasType = params.get('gasType') || 'N/A';
-        const quantity = params.get('quantity') || 'N/A';
-        const totalPrice = params.get('totalPrice') || '0';
-        const deliveryAddress = params.get('deliveryAddress') || 'N/A';
+        // Sample receipt data (replace with dynamic values)
+        const params = {
+            orderId: "12345", // Example order ID (replace with actual value)
+            gasType: "LPG",
+            quantity: 12, // This is a number
+            orderDate: "2024-12-22T15:17:21.204Z", // Example order date
+            deliveryAddress: "9 Tudun Wada",
+            totalPrice: 5000, // Example total price
+        };
 
         // Debugging - check if parameters are correctly retrieved
-        console.log("Gas Type: ", gasType);
-        console.log("Quantity: ", quantity);
-        console.log("Total Price: ", totalPrice);
-        console.log("Delivery Address: ", deliveryAddress);
+        console.log("Gas Type: ", params.gasType);
+        console.log("Quantity: ", params.quantity);
+        console.log("Order Date: ", params.orderDate);
+        console.log("Delivery Address: ", params.deliveryAddress);
+        console.log("Total Price: ", params.totalPrice);
 
         // Populate receipt fields
         document.getElementById('receiptDate').textContent = `Date: ${new Date().toLocaleString()}`;
-        document.getElementById('receiptGasType').textContent = gasType;
-        document.getElementById('receiptQuantity').textContent = quantity;
-        document.getElementById('receiptTotalPrice').textContent = `₦${totalPrice}`;
-        document.getElementById('receiptAddress').textContent = deliveryAddress;
+        document.getElementById('receiptGasType').textContent = params.gasType;
+        document.getElementById('receiptQuantity').textContent = params.quantity;
+        document.getElementById('receiptTotalPrice').textContent = `₦${params.totalPrice}`;
+        document.getElementById('receiptAddress').textContent = params.deliveryAddress;
 
         // Send email after the receipt is loaded
         onAuthStateChanged(auth, async (user) => {
@@ -58,19 +61,23 @@
                 userEmail = user.email; // Use logged-in user's email
             }
 
-            // Debugging - check which email is being used
-            console.log("Email to send receipt to: ", userEmail);
+            // Prepare the email data object
+            const emailData = {
+                to_email: userEmail, 
+                orderId: params.orderId, // Send the order ID
+                gasType: params.gasType, // Send the gas type
+                quantity: params.quantity, // Send the quantity
+                orderDate: new Date().toLocaleString(), // Send the order date
+                deliveryAddress: params.deliveryAddress, // Send the delivery address
+                totalPrice: params.totalPrice, // Send the total price
+            };
+
+            // Debugging - check email content before sending
+            console.log("Email data to be sent:", emailData);
 
             try {
                 // Send the email via EmailJS
-                await emailjs.send("service_h6hlgaq", "template_talavm5", {
-                    to_email: userEmail,
-                    receipt_date: new Date().toLocaleString(),
-                    gas_type: gasType,
-                    quantity: quantity,
-                    total_price: totalPrice,
-                    delivery_address: deliveryAddress,
-                });
+                await emailjs.send("service_h6hlgaq", "template_talavm5", emailData);
                 console.log('Receipt sent to:', userEmail);
             } catch (error) {
                 console.error('Error sending email:', error);
@@ -91,16 +98,15 @@
             pdf.text('Payment Receipt', 20, 20);
             pdf.setFontSize(12);
             pdf.text(`Date: ${new Date().toLocaleString()}`, 20, 30);
-            pdf.text(`Gas Type: ${gasType}`, 20, 40);
-            pdf.text(`Quantity: ${quantity} kg`, 20, 50);
-            pdf.text(`Total Price: ₦${totalPrice}`, 20, 60);
-            pdf.text(`Delivery Address: ${deliveryAddress}`, 20, 70);
+            pdf.text(`Gas Type: ${params.gasType}`, 20, 40);
+            pdf.text(`Quantity: ${params.quantity} kg`, 20, 50);
+            pdf.text(`Total Price: ₦${params.totalPrice}`, 20, 60);
+            pdf.text(`Delivery Address: ${params.deliveryAddress}`, 20, 70);
 
             pdf.save('receipt.pdf');
         }
     </script>
 
-    <!-- Update EmailJS SDK version -->
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
 
 </head>
