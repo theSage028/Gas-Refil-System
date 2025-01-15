@@ -125,183 +125,175 @@
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
     import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-    import { getFirestore, collection, query, where, getDocs, Timestamp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+    import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
-    document.addEventListener("DOMContentLoaded", function() {
-      // Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyCX0vxlyd0hXXDur4v3SpAnNuRwrm4Fyyc",
-        authDomain: "gas-refill-app.firebaseapp.com",
-        projectId: "gas-refill-app",
-        storageBucket: "gas-refill-app.appspot.com",
-        messagingSenderId: "369760533545",
-        appId: "1:369760533545:web:5bc99b940b30154fe3b038",
-        measurementId: "G-8GV51M539Z"
+    // Simulated user for testing purposes
+    let currentUser = {
+      uid: "QSPSW3PSW7Xzku0kxZtGzUQxsj82",  // Your test user ID
+      email: "ezekielmatthew28@gmail.com",   // Your provided email
+    };
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX0vxlyd0hXXDur4v3SpAnNuRwrm4Fyyc",
+      authDomain: "gas-refill-app.firebaseapp.com",
+      projectId: "gas-refill-app",
+      storageBucket: "gas-refill-app.appspot.com",
+      messagingSenderId: "369760533545",
+      appId: "1:369760533545:web:5bc99b940b30154fe3b038",
+      measurementId: "G-8GV51M539Z"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    console.log("Firebase initialized successfully");
+
+    // Function to generate report
+    async function generateReport(period) {
+      if (!currentUser) {
+        alert("Please log in first.");
+        window.location.href = "index.html"; // Redirect to index.html if user is not authenticated
+        return;
+      }
+
+      const { start, end } = getDateRange(period);
+      console.log(`Querying from ${start} to ${end}`); // Log the date range for debugging
+
+      const ordersRef = collection(db, 'orders');
+      const q = query(ordersRef);
+
+      try {
+        const querySnapshot = await getDocs(q);
+        const orders = [];
+        querySnapshot.forEach((doc) => {
+          const orderData = doc.data();
+          const orderDate = new Date(orderData.orderDate);  // Convert ISO date string to JS Date
+          if (orderDate >= start && orderDate <= end) {
+            orders.push({ id: doc.id, ...orderData });
+          }
+        });
+
+        // Display report
+        displayReport(orders, period);
+      } catch (error) {
+        console.error('Error generating report:', error);
+        alert('Failed to generate report. Please try again.');
+      }
+    }
+
+    // Helper function to get date range
+    function getDateRange(period) {
+      const now = new Date();
+      let startDate;
+
+      if (period === 'daily') {
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      } else if (period === 'weekly') {
+        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+        startDate = new Date(startOfWeek.getFullYear(), startOfWeek.getMonth(), startOfWeek.getDate());
+      } else if (period === 'monthly') {
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1); // First day of the current month
+      }
+
+      return {
+        start: startDate,  // Start date as a JavaScript Date object
+        end: now,          // End date as a JavaScript Date object
       };
+    }
 
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      const auth = getAuth(app);
+    // Function to display report inside modal
+function displayReport(orders, period) {
+  const reportOutput = document.getElementById('reportOutput');
+  const modal = document.getElementById('reportModal');
+  
+  if (orders.length === 0) {
+    reportOutput.innerHTML = `<p>No orders found for this ${period}.</p>`;
+  } else {
+    reportOutput.innerHTML = ` 
+      <h3>${period.charAt(0).toUpperCase() + period.slice(1)} Report</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Gas Type</th>
+            <th>Quantity</th>
+            <th>Order Date</th>
+            <th>Delivery Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${orders
+            .map(
+              (order) => ` 
+            <tr>
+              <td>${order.id}</td>
+              <td>${order.gasType}</td>
+              <td>${order.quantity}</td>
+              <td>${new Date(order.orderDate).toLocaleString()}</td>
+              <td>${order.deliveryAddress}</td>
+            </tr>`
+            )
+            .join('')}
+        </tbody>
+      </table>
+    `;
+  }
 
-      console.log("Firebase initialized successfully");
+  modal.style.display = "block";
+}
 
-      let currentUser = null;
+    // Function to close the modal
+    window.closeModal = function() {
+      const modal = document.getElementById('reportModal');
+      modal.style.display = "none";
+    }
 
-      // Check the current authenticated user
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          currentUser = user; // Save the user in the variable
-          console.log("User is logged in:", user.uid);
-        } else {
-          console.log("No user is logged in. Redirecting to index.html...");
-          window.location.href = "index.html"; // Redirect to index.html if no user is logged in
-        }
-      });
+    // Function to print report
+    window.printReport = function() {
+      const printContents = document.getElementById('reportOutput').innerHTML;
+      const printWindow = window.open('', '', 'width=800,height=600');
+      printWindow.document.write(`  
+        <html>
+          <head>
+            <title>Report</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+              }
+              table {
+                width: 100%;
+                border-collapse: collapse;
+              }
+              th, td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+              }
+              th {
+                background-color: #4CAF50;
+                color: white;
+              }
+            </style>
+          </head>
+          <body>${printContents}</body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
+    };
 
-      // Helper function to get date range
-      function getDateRange(period) {
-        const now = new Date();
-        let startDate;
-
-        if (period === 'daily') {
-          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        } else if (period === 'weekly') {
-          const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-          startDate = new Date(startOfWeek.getFullYear(), startOfWeek.getMonth(), startOfWeek.getDate());
-        } else if (period === 'monthly') {
-          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-        }
-
-        return {
-          start: Timestamp.fromDate(startDate),
-          end: Timestamp.fromDate(now),
-        };
-      }
-
-      // Function to generate report
-      async function generateReport(period) {
-        if (!currentUser) {
-          alert("Please log in first.");
-          window.location.href = "index.html"; // Redirect to index.html if user is not authenticated
-          return;
-        }
-
-        const { start, end } = getDateRange(period);
-
-        console.log(`Generating ${period} report for user ${currentUser.uid}`);
-        const ordersRef = collection(db, 'orders');
-        const q = query(ordersRef, where('orderDate', '>=', start), where('orderDate', '<=', end));
-
-        try {
-          const querySnapshot = await getDocs(q);
-          const orders = [];
-          querySnapshot.forEach((doc) => {
-            orders.push({ id: doc.id, ...doc.data() });
-          });
-
-          // Display report
-          displayReport(orders, period);
-        } catch (error) {
-          console.error('Error generating report:', error);
-          alert('Failed to generate report. Please try again.');
-        }
-      }
-
-      // Function to display report inside modal
-      function displayReport(orders, period) {
-        const reportOutput = document.getElementById('reportOutput');
-        const modal = document.getElementById('reportModal');
-        
-        if (orders.length === 0) {
-          reportOutput.innerHTML = `<p>No orders found for this ${period}.</p>`;
-        } else {
-          reportOutput.innerHTML = ` 
-            <h3>${period.charAt(0).toUpperCase() + period.slice(1)} Report</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Gas Type</th>
-                  <th>Quantity</th>
-                  <th>Total Price</th>
-                  <th>Order Date</th>
-                  <th>Delivery Address</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${orders
-                  .map(
-                    (order) => ` 
-                  <tr>
-                    <td>${order.id}</td>
-                    <td>${order.gasType}</td>
-                    <td>${order.quantity}</td>
-                    <td>₦${order.totalPrice}</td>
-                    <td>${order.orderDate ? new Date(order.orderDate.toDate()).toLocaleString() : 'N/A'}</td>
-                    <td>${order.deliveryAddress}</td>
-                  </tr>`
-                  )
-                  .join('')}
-
-              </tbody>
-            </table>
-          `;
-        }
-
-        modal.style.display = "block";
-      }
-
-      // Function to close the modal
-      function closeModal() {
-        const modal = document.getElementById('reportModal');
-        modal.style.display = "none";
-      }
-
-      // Function to print report
-      function printReport() {
-        const printContents = document.getElementById('reportOutput').innerHTML;
-        const printWindow = window.open('', '', 'width=800,height=600');
-        printWindow.document.write(`  
-          <html>
-            <head>
-              <title>Report</title>
-              <style>
-                body {
-                  font-family: Arial, sans-serif;
-                }
-                table {
-                  width: 100%;
-                  border-collapse: collapse;
-                }
-                th, td {
-                  border: 1px solid #ddd;
-                  padding: 8px;
-                  text-align: left;
-                }
-                th {
-                  background-color: #4CAF50;
-                  color: white;
-                }
-              </style>
-            </head>
-            <body>${printContents}</body>
-          </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-      }
-
-      // Event listeners for buttons
-      document.getElementById('dailyReportBtn').addEventListener('click', function() {
-        generateReport('daily');
-      });
-      document.getElementById('weeklyReportBtn').addEventListener('click', function() {
-        generateReport('weekly');
-      });
-      document.getElementById('monthlyReportBtn').addEventListener('click', function() {
-        generateReport('monthly');
-      });
+    // Event listeners for buttons
+    document.getElementById('dailyReportBtn').addEventListener('click', function() {
+      generateReport('daily');
+    });
+    document.getElementById('weeklyReportBtn').addEventListener('click', function() {
+      generateReport('weekly');
+    });
+    document.getElementById('monthlyReportBtn').addEventListener('click', function() {
+      generateReport('monthly');
     });
   </script>
 </body>
