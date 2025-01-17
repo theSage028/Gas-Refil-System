@@ -4,7 +4,6 @@ import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/fi
 import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-
 // Your Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCX0vxlyd0hXXDur4v3SpAnNuRwrm4Fyyc",
@@ -24,7 +23,10 @@ const db = getFirestore(app);
 // DOM Elements
 const pendingOrdersTable = document.getElementById("pendingOrdersTable");
 const completedOrdersTable = document.getElementById("completedOrdersTable");
-const generateReportButton = document.getElementById("generateReportButton");
+const generateUserReportForm = document.getElementById("generateUserReportForm");
+const userIdInput = document.getElementById("userIdInput");
+const orderStatusSelect = document.getElementById("orderStatusSelect");
+const reportContainer = document.getElementById("reportContainer");
 const logoutButton = document.getElementById("logoutButton");
 
 // Fetch Orders
@@ -67,10 +69,10 @@ window.acceptOrder = async (orderId) => {
   fetchOrders();
 };
 
-// Generate Report
-const generateReport = async () => {
+// Generate User Report
+const generateUserReport = async (userId, status) => {
   const ordersRef = collection(db, "orders");
-  const q = query(ordersRef);
+  const q = query(ordersRef, where("userId", "==", userId), where("status", "==", status));
   const querySnapshot = await getDocs(q);
 
   const reportData = [];
@@ -86,7 +88,55 @@ const generateReport = async () => {
     });
   });
 
-  // Convert to CSV
+  if (reportData.length > 0) {
+    const reportHtml = `
+      <h3>Report for ${userId} (${status} Orders)</h3>
+      <table border="1">
+        <thead>
+          <tr>
+            <th>OrderID</th>
+            <th>Gas Type</th>
+            <th>Quantity</th>
+            <th>Delivery Address</th>
+            <th>Status</th>
+            <th>Order Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${reportData.map(row => `
+            <tr>
+              <td>${row.OrderID}</td>
+              <td>${row.GasType}</td>
+              <td>${row.Quantity}</td>
+              <td>${row.DeliveryAddress}</td>
+              <td>${row.Status}</td>
+              <td>${row.OrderDate}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+      <button id="downloadReportButton">Download Report</button>
+      <button id="printReportButton">Print Report</button>
+    `;
+    
+    reportContainer.innerHTML = reportHtml;
+
+    // Add download functionality
+    document.getElementById("downloadReportButton").addEventListener("click", () => {
+      generateCSV(reportData);
+    });
+
+    // Add print functionality
+    document.getElementById("printReportButton").addEventListener("click", () => {
+      printReport(reportHtml);
+    });
+  } else {
+    reportContainer.innerHTML = `<p>No orders found for this user with the selected status.</p>`;
+  }
+};
+
+// Generate CSV for Download
+const generateCSV = (reportData) => {
   const csvContent = "data:text/csv;charset=utf-8," + 
     ["OrderID,GasType,Quantity,DeliveryAddress,Status,OrderDate"].concat(
       reportData.map((row) => 
@@ -94,18 +144,45 @@ const generateReport = async () => {
       )
     ).join("\n");
 
-  // Create download link
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
   link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "order_report.csv");
-  document.body.appendChild(link); // Required for Firefox
+  link.setAttribute("download", "user_order_report.csv");
+  document.body.appendChild(link); 
   link.click();
   document.body.removeChild(link);
 };
 
-// Attach Event Listeners
-generateReportButton.addEventListener("click", generateReport);
+// Print Report
+const printReport = (reportHtml) => {
+  const printWindow = window.open('', '', 'width=800,height=600');
+  printWindow.document.write(`
+    <html>
+      <head><title>Print Report</title></head>
+      <body>
+        ${reportHtml}
+        <script>
+          window.onload = function () {
+            window.print();
+            window.onafterprint = function () {
+              window.close();
+            };
+          };
+        </script>
+      </body>
+    </html>
+  `);
+};
+
+// Handle Form Submission
+generateUserReportForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const userId = userIdInput.value;
+  const status = orderStatusSelect.value;
+  generateUserReport(userId, status);
+});
+
+// Logout
 logoutButton.addEventListener("click", () => {
   signOut(auth).then(() => {
     alert("Logged out successfully!");
