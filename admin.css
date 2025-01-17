@@ -1,133 +1,233 @@
 /* Global Styles */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
+  padding: 20px;
+}
+
+h1, h2 {
+  text-align: center;
+  color: #4CAF50;
+  margin-bottom: 20px;
+}
+
+/* Table Container */
+.table-container {
+  margin: 20px auto;
+  width: 100%;
+  max-width: 1000px;
+  overflow-x: auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+th, td {
+  text-align: left;
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+th {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+td {
+  font-size: 14px;
+  color: #333;
+}
+
+/* Buttons */
+button {
+  padding: 10px 15px;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Generate Reports Form */
+#generateUserReportForm {
+  max-width: 600px;
+  margin: 30px auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#generateUserReportForm label {
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+#generateUserReportForm input,
+#generateUserReportForm select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+#generateUserReportForm input:focus,
+#generateUserReportForm select:focus {
+  border-color: #4CAF50;
+  outline: none;
+}
+
+/* Report Section */
+#reportContainer {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#reportContainer h3 {
+  text-align: center;
+  color: #4CAF50;
+  margin-bottom: 20px;
+}
+
+#reportContainer table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#reportContainer th, 
+#reportContainer td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+#reportContainer th {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+#reportContainer td {
+  font-size: 14px;
+  color: #333;
+}
+
+/* Download and Print Buttons */
+#reportContainer button {
+  display: inline-block;
+  margin: 10px;
+  padding: 12px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#reportContainer button:hover {
+  background-color: #45a049;
+}
+
+#reportContainer #printReportButton {
+  background-color: #008CBA;
+}
+
+#reportContainer #printReportButton:hover {
+  background-color: #007bb5;
+}
+
+/* Generate Reports & Logout Buttons */
+#generateReportButton, #logoutButton {
+  display: block;
+  width: 200px;
+  margin: 20px auto;
+  padding: 12px;
+  text-align: center;
+}
+
+#logoutButton {
+  background-color: #ff4d4d;
+}
+
+#logoutButton:hover {
+  background-color: #e60000;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f4f4f9;
-    color: #333;
-    padding: 20px;
-  }
-  
-  h1, h2 {
-    text-align: center;
-    color: #4CAF50;
-    margin-bottom: 20px;
-  }
-  
-  /* Table Container */
-  .table-container {
-    margin: 20px auto;
-    width: 100%;
-    max-width: 1000px;
-    overflow-x: auto;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 10px;
   }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
+
+  h1, h2 {
+    font-size: 20px;
   }
-  
-  thead {
-    background-color: #4CAF50;
-    color: #fff;
-  }
-  
+
   th, td {
-    text-align: left;
-    padding: 12px;
-    border: 1px solid #ddd;
+    font-size: 12px;
   }
-  
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  th {
-    font-size: 16px;
-    font-weight: bold;
-  }
-  
-  td {
-    font-size: 14px;
-    color: #333;
-  }
-  
-  /* Buttons */
+
   button {
-    padding: 10px 15px;
-    background-color: #4CAF50;
-    color: white;
-    font-size: 14px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    font-size: 12px;
+    padding: 8px 10px;
   }
-  
-  button:hover {
-    background-color: #45a049;
+
+  #generateUserReportForm {
+    padding: 15px;
   }
-  
-  /* Generate Reports & Logout Buttons */
-  #generateReportButton, #logoutButton {
-    display: block;
-    width: 200px;
-    margin: 20px auto;
-    padding: 12px;
-    text-align: center;
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 18px;
   }
-  
-  #logoutButton {
-    background-color: #ff4d4d;
+
+  th, td {
+    font-size: 10px;
   }
-  
-  #logoutButton:hover {
-    background-color: #e60000;
+
+  button {
+    font-size: 10px;
+    padding: 6px 8px;
   }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    body {
-      padding: 10px;
-    }
-  
-    h1, h2 {
-      font-size: 20px;
-    }
-  
-    th, td {
-      font-size: 12px;
-    }
-  
-    button {
-      font-size: 12px;
-      padding: 8px 10px;
-    }
+
+  #generateUserReportForm {
+    padding: 10px;
   }
-  
-  @media (max-width: 480px) {
-    h1 {
-      font-size: 18px;
-    }
-  
-    th, td {
-      font-size: 10px;
-    }
-  
-    button {
-      font-size: 10px;
-      padding: 6px 8px;
-    }
-  }
-  
+}
