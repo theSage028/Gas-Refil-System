@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users List</title>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCX0vxlyd0hXXDur4v3SpAnNuRwrm4Fyyc",
+      authDomain: "gas-refill-app.firebaseapp.com",
+      projectId: "gas-refill-app",
+      storageBucket: "gas-refill-app.firebasestorage.app",
+      messagingSenderId: "369760533545",
+      appId: "1:369760533545:web:5bc99b940b30154fe3b038",
+      measurementId: "G-8GV51M539Z"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM Elements
+    const usersTable = document.getElementById("usersTable");
+    const logoutButton = document.getElementById("logoutButton");
+
+    // Fetch Users
+    const fetchUsers = async () => {
+      const usersRef = collection(db, "users");
+      const querySnapshot = await getDocs(usersRef);
+
+      usersTable.innerHTML = ""; // Clear the table before adding data
+
+      querySnapshot.forEach((doc) => {
+        const user = doc.data();
+        const userId = doc.id;
+        const displayName = user.displayName || "N/A"; // If no displayName exists, show "N/A"
+        const email = user.email;
+
+        const row = `
+          <tr>
+            <td>${userId}</td>
+            <td>${displayName}</td>
+            <td>${email}</td>
+          </tr>
+        `;
+
+        usersTable.innerHTML += row;
+      });
+    };
+
+    // Logout
+    logoutButton.addEventListener("click", () => {
+      signOut(auth).then(() => {
+        alert("Logged out successfully!");
+        window.location.href = "index.html"; // Redirect to login page after logout
+      });
+    });
+
+    // Authenticate Admin
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchUsers();
+      } else {
+        alert("Unauthorized access!");
+        window.location.href = "index.html"; // Redirect to login page if not authenticated
+      }
+    });
+  </script>
+
+  <style>
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #4CAF50;
+      margin-bottom: 20px;
+    }
+
+    /* Table Container */
+    .table-container {
+      margin: 20px auto;
+      width: 100%;
+      max-width: 1000px;
+      overflow-x: auto;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background-color: #4CAF50;
+      color: #fff;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 12px;
+      border: 1px solid #ddd;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    th {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    td {
+      font-size: 14px;
+      color: #333;
+    }
+
+    /* Buttons */
+    button {
+      padding: 10px 15px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      th, td {
+        font-size: 12px;
+      }
+
+      button {
+        font-size: 12px;
+        padding: 8px 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 18px;
+      }
+
+      th, td {
+        font-size: 10px;
+      }
+
+      button {
+        font-size: 10px;
+        padding: 6px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Users List</h1>
+
+  <div class="table-container">
+    <table border="1">
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Display Name</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody id="usersTable">
+        <!-- User rows will be populated here -->
+      </tbody>
+    </table>
+  </div>
+
+  <button id="logoutButton">Logout</button>
+</body>
+</html>
