@@ -190,6 +190,11 @@ logoutButton.addEventListener("click", () => {
   });
 });
 
+// Add event listener to navigate to user page
+    document.getElementById("userPageButton").addEventListener("click", () => {
+      window.location.href = "user.html"; // Redirect to user.html
+    });
+
 // Authenticate Admin
 onAuthStateChanged(auth, (user) => {
   if (user) {
