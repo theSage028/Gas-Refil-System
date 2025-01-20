@@ -51,28 +51,29 @@
         document.getElementById('receiptAddress').textContent = deliveryAddress;
 
         onAuthStateChanged(auth, async (user) => {
-            let userEmail = 'ezekielmatthew28@gmail.com'; // Default email if no user is logged in
-            if (user) {
-                userEmail = user.email; // Use logged-in user's email
-            }
+    if (user) {
+        const userEmail = user.email; // Use logged-in user's email
+        console.log("Email to send receipt to: ", userEmail);
 
-            console.log("Email to send receipt to: ", userEmail);
+        try {
+            await emailjs.send("service_h6hlgaq", "template_talavm5", {
+                to_email: userEmail,
+                receipt_date: orderDate,
+                order_id: orderId,
+                gas_type: gasType,
+                quantity: quantity,
+                total_price: totalPrice,
+                delivery_address: deliveryAddress,
+            });
+            console.log('Receipt sent to:', userEmail);
+        } catch (error) {
+            console.error('Error sending email:', error);
+        }
+    } else {
+        console.error("No user is logged in. Cannot send receipt.");
+    }
+});
 
-            try {
-                await emailjs.send("service_h6hlgaq", "template_talavm5", {
-                    to_email: userEmail,
-                    receipt_date: orderDate,
-                    order_id: orderId,
-                    gas_type: gasType,
-                    quantity: quantity,
-                    total_price: totalPrice,
-                    delivery_address: deliveryAddress,
-                });
-                console.log('Receipt sent to:', userEmail);
-            } catch (error) {
-                console.error('Error sending email:', error);
-            }
-        });
 
         // Print receipt
         function printReceipt() {
