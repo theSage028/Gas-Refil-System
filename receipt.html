@@ -5,101 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Receipt</title>
     <link rel="stylesheet" href="receipt.css">
-
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-        import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCX0vxlyd0hXXDur4v3SpAnNuRwrm4Fyyc",
-            authDomain: "gas-refill-app.firebaseapp.com",
-            projectId: "gas-refill-app",
-            storageBucket: "gas-refill-app.appspot.com",
-            messagingSenderId: "369760533545",
-            appId: "1:369760533545:web:5bc99b940b30154fe3b038",
-            measurementId: "G-8GV51M539Z"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        emailjs.init("Wln1Nu2TKjqVMGCsA"); // Your EmailJS public key
-
-        const params = new URLSearchParams(window.location.search);
-        const gasType = params.get('gasType') || 'N/A';
-        const quantity = params.get('quantity') || 'N/A';
-        const totalPrice = params.get('totalPrice') || '0';
-        const deliveryAddress = params.get('deliveryAddress') || 'N/A';
-        const orderId = params.get('orderId') || 'N/A';  // Order ID from URL params
-        const orderDate = new Date().toLocaleString();  // Current date and time for Order Date
-
-        // Debugging - check if parameters are correctly retrieved
-        console.log("Gas Type: ", gasType);
-        console.log("Quantity: ", quantity);
-        console.log("Total Price: ", totalPrice);
-        console.log("Delivery Address: ", deliveryAddress);
-        console.log("Order ID: ", orderId);
-        console.log("Order Date: ", orderDate);
-
-        document.getElementById('receiptDate').textContent = `Date: ${orderDate}`;
-        document.getElementById('receiptOrderId').textContent = orderId;
-        document.getElementById('receiptGasType').textContent = gasType;
-        document.getElementById('receiptQuantity').textContent = quantity;
-        document.getElementById('receiptTotalPrice').textContent = `₦${totalPrice}`;
-        document.getElementById('receiptAddress').textContent = deliveryAddress;
-
-        onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        const userEmail = user.email; // Use logged-in user's email
-        console.log("Email to send receipt to: ", userEmail);
-
-        try {
-            await emailjs.send("service_h6hlgaq", "template_talavm5", {
-                to_email: userEmail,
-                receipt_date: orderDate,
-                order_id: orderId,
-                gas_type: gasType,
-                quantity: quantity,
-                total_price: totalPrice,
-                delivery_address: deliveryAddress,
-            });
-            console.log('Receipt sent to:', userEmail);
-        } catch (error) {
-            console.error('Error sending email:', error);
-        }
-    } else {
-        console.error("No user is logged in. Cannot send receipt.");
-    }
-});
-
-
-        // Print receipt
-        function printReceipt() {
-            window.print();
-        }
-
-        // Download receipt as PDF
-        async function downloadReceipt() {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF();
-
-            pdf.setFontSize(16);
-            pdf.text('Payment Receipt', 20, 20);
-            pdf.setFontSize(12);
-            pdf.text(`Date: ${orderDate}`, 20, 30);
-            pdf.text(`Order ID: ${orderId}`, 20, 40);
-            pdf.text(`Gas Type: ${gasType}`, 20, 50);
-            pdf.text(`Quantity: ${quantity} kg`, 20, 60);
-            pdf.text(`Total Price: ₦${totalPrice}`, 20, 70);
-            pdf.text(`Delivery Address: ${deliveryAddress}`, 20, 80);
-
-            pdf.save('receipt.pdf');
-        }
-    </script>
-
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3.2.0/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 </head>
 
 <body>
@@ -137,6 +44,94 @@
             <button onclick="downloadReceipt()">Download as PDF</button>
         </div>
     </div>
-</body>
 
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCX0vxlyd0hXXDur4v3SpAnNuRwrm4Fyyc",
+            authDomain: "gas-refill-app.firebaseapp.com",
+            projectId: "gas-refill-app",
+            storageBucket: "gas-refill-app.appspot.com",
+            messagingSenderId: "369760533545",
+            appId: "1:369760533545:web:5bc99b940b30154fe3b038",
+            measurementId: "G-8GV51M539Z"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        emailjs.init("Wln1Nu2TKjqVMGCsA"); // Initialize EmailJS with your public key
+
+        // Parse URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const gasType = params.get('gasType') || 'N/A';
+        const quantity = params.get('quantity') || 'N/A';
+        const totalPrice = params.get('totalPrice') || '0';
+        const deliveryAddress = params.get('deliveryAddress') || 'N/A';
+        const orderId = params.get('orderId') || 'N/A';
+        const orderDate = new Date().toLocaleString();
+
+        // Populate receipt details
+        document.getElementById('receiptDate').textContent = `Date: ${orderDate}`;
+        document.getElementById('receiptOrderId').textContent = orderId;
+        document.getElementById('receiptGasType').textContent = gasType;
+        document.getElementById('receiptQuantity').textContent = quantity;
+        document.getElementById('receiptTotalPrice').textContent = `₦${totalPrice}`;
+        document.getElementById('receiptAddress').textContent = deliveryAddress;
+
+        // Send receipt to email
+        onAuthStateChanged(auth, async (user) => {
+            let userEmail = 'default@example.com'; // Default email
+            if (user) {
+                userEmail = user.email; // Use logged-in user's email
+            }
+
+            try {
+                await emailjs.send("service_h6hlgaq", "template_talavm5", {
+                    to_email: userEmail,
+                    receipt_date: orderDate,
+                    order_id: orderId,
+                    gas_type: gasType,
+                    quantity: quantity,
+                    total_price: totalPrice,
+                    delivery_address: deliveryAddress,
+                });
+                console.log(`Receipt sent to: ${userEmail}`);
+            } catch (error) {
+                console.error('Error sending email:', error);
+            }
+        });
+
+        // Print receipt
+        function printReceipt() {
+            window.print();
+        }
+        window.printReceipt = printReceipt; // Attach to global scope
+
+        // Download receipt as PDF
+        async function downloadReceipt() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+
+            pdf.setFontSize(16);
+            pdf.text('Payment Receipt', 20, 20);
+            pdf.setFontSize(12);
+            pdf.text(`Date: ${orderDate}`, 20, 30);
+            pdf.text(`Order ID: ${orderId}`, 20, 40);
+            pdf.text(`Gas Type: ${gasType}`, 20, 50);
+            pdf.text(`Quantity: ${quantity} kg`, 20, 60);
+            pdf.text(`Total Price: ₦${totalPrice}`, 20, 70);
+            pdf.text(`Delivery Address: ${deliveryAddress}`, 20, 80);
+
+            pdf.save('receipt.pdf');
+        }
+        window.downloadReceipt = downloadReceipt; // Attach to global scope
+    </script>
+</body>
 </html>
